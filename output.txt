@@ -1,0 +1,20 @@
+
+---Page1---
+CS 423 Computer Graphics
+Assignment #1 Handout
+Due: Sunday, March 2, 2025 @ 11:00pm.
+
+Synthetic Lighting for Photography
+Interesting manipulations can now be done...
+e Subtract ambient to find contribution of each light source
+e Change color of lights
+e Negative lights!
+
+I, = wi, + (1-w) I,
+For example, if w is varied at intervals of 0.1, then the sequence of 10 images is
+T.01 = 0.0*I_ + 1.0*I,
+
+I,02 = 0.1*I + 0.9*I,
+
+I,10 1.0*I_ + 0.0*I
+t a b
