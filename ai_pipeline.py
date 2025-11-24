@@ -131,7 +131,7 @@ def extract_cnic(ocr_text):
 # ------------- EMR EXTRACTION -----------
 def extract_emr(raw_text):
     fields = {
-        "Document Type": "EMR",
+        
         "Patient Name": None,
         "Age": None,
         "Gender": None,
@@ -142,41 +142,80 @@ def extract_emr(raw_text):
         "Date": None
     }
 
-    text = raw_text.lower()
+    text_lower = raw_text.lower()
 
-    # Patient Name
-    name = re.search(r"patient name[:\- ]+([a-zA-Z ]+)", raw_text, re.I)
-    if name: fields["Patient Name"] = name.group(1).strip()
+    # --- Patient Name ---
+    # Support variations: "Patient Name", "Name of Patient", "Pt Name"
+    name_patterns = [
+        r"patient name[:\- ]+([a-zA-Z ]+)",
+        r"name of patient[:\- ]+([a-zA-Z ]+)",
+        r"pt name[:\- ]+([a-zA-Z ]+)"
+    ]
+    for pat in name_patterns:
+        match = re.search(pat, raw_text, re.I)
+        if match:
+            fields["Patient Name"] = match.group(1).strip()
+            break
 
-    # Gender
-    if "male" in text: fields["Gender"] = "Male"
-    elif "female" in text: fields["Gender"] = "Female"
+    # --- Gender ---
+    # Handle "Male", "M", "Female", "F"
+    if re.search(r"\bmale\b|\bm\b", text_lower):
+        fields["Gender"] = "Male"
+    elif re.search(r"\bfemale\b|\bf\b", text_lower):
+        fields["Gender"] = "Female"
 
-    # Age
-    age = re.search(r"age[:\- ]+(\d+)", raw_text)
-    if age: fields["Age"] = age.group(1)
+    # --- Age ---
+    # Support "Age", "Patient Age"
+    age_match = re.search(r"(?:age|patient age)[:\- ]*(\d+)", raw_text, re.I)
+    if age_match:
+        fields["Age"] = age_match.group(1)
 
-    # Doctor
-    doc = re.search(r"doctor[:\- ]+([a-zA-Z .]+)", raw_text, re.I)
-    if doc: fields["Doctor"] = doc.group(1).strip()
+    # --- Doctor / Physician ---
+    doctor_patterns = [
+        r"doctor[:\- ]+([a-zA-Z .]+)",
+        r"physician[:\- ]+([a-zA-Z .]+)",
+        r"attending doctor[:\- ]+([a-zA-Z .]+)"
+    ]
+    for pat in doctor_patterns:
+        match = re.search(pat, raw_text, re.I)
+        if match:
+            fields["Doctor"] = match.group(1).strip()
+            break
 
-    # Diagnosis
-    diag = re.search(r"diagnosis[:\- ]+(.+)", raw_text, re.I)
-    if diag: fields["Diagnosis"] = diag.group(1).strip()
+    # --- Diagnosis ---
+    diag_patterns = [
+        r"diagnosis[:\- ]+(.+)",
+        r"dx[:\- ]+(.+)"
+    ]
+    for pat in diag_patterns:
+        match = re.search(pat, raw_text, re.I)
+        if match:
+            fields["Diagnosis"] = match.group(1).strip()
+            break
 
-    # Date
-    date = re.search(r"\d{2}[.\-/]\d{2}[.\-/]\d{4}", raw_text)
-    if date: fields["Date"] = date.group(0)
+    # --- Date ---
+    # Support formats like dd/mm/yyyy, dd-mm-yyyy, yyyy-mm-dd
+    date_match = re.search(r"\b(\d{2}[./-]\d{2}[./-]\d{4}|\d{4}[./-]\d{2}[./-]\d{2})\b", raw_text)
+    if date_match:
+        fields["Date"] = date_match.group(0)
 
-    # Medicines (basic extraction)
-    meds = re.findall(r"[A-Z][a-z]+\s?\d*mg", raw_text)
+    # --- Medicines ---
+    # Match patterns like "Paracetamol 500mg", "Amoxicillin 250mg", including optional mg/ml
+    meds = re.findall(r"([A-Z][a-z]+(?: [A-Z][a-z]+)* \d+(?:mg|ml)?)", raw_text)
     if meds:
         fields["Medicines"] = ", ".join(meds)
 
-    # Tests
-    tests = re.findall(r"(CBC|LFT|RFT|XRAY|ULTRASOUND|ECG)", raw_text, re.I)
-    if tests:
-        fields["Tests"] = ", ".join(set(tests))
+    # --- Tests / Lab investigations ---
+    # Support common abbreviations and keywords
+    test_keywords = [
+        "cbc", "lft", "rft", "xray", "ultrasound", "ecg", "mri", "ct scan", "blood sugar", "hb", "cholesterol"
+    ]
+    found_tests = set()
+    for tk in test_keywords:
+        if re.search(r"\b" + re.escape(tk) + r"\b", text_lower):
+            found_tests.add(tk.upper())
+    if found_tests:
+        fields["Tests"] = ", ".join(sorted(found_tests))
 
     return fields
 
@@ -255,10 +294,10 @@ def extract_property(raw_text):
 def detect_document_type(raw_text):
     text = raw_text.lower()
 
-    if "identity card" in text :
+    if "identity card" in text or re.search(r"\d{5}-\d{7}-\d", raw_text):
         return "CNIC"
 
-    if "patient" in text or "doctor" in text or "diagnosis" in text:
+    if "patient" in text or "medical" in text or "doctor" in text or "diagnosis" in text:
         return "EMR"
 
     if "invoice" in text or "employee" in text or "salary" in text:
