@@ -24,12 +24,13 @@
         <button class="btn btn-primary w-100" type="submit">Upload & Process</button>
       </form>
 
-      {% if extracted_text %}
+      {% if extracted_data %}
       <div class="mt-4">
-        <h5>🧠 Structured Output:</h5>
-        <div class="output-box">{{ extracted_text }}</div>
+        <h5>🧠 Structured JSON Output:</h5>
+        <pre class="output-box">{{ extracted_data | tojson(indent=4) }}</pre>
       </div>
       {% endif %}
+
     </div>
   </div>
 </body>

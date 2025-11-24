@@ -255,7 +255,7 @@ def extract_property(raw_text):
 def detect_document_type(raw_text):
     text = raw_text.lower()
 
-    if "identity card" in text or re.search(r"\d{5}-\d{7}-\d", raw_text):
+    if "identity card" in text :
         return "CNIC"
 
     if "patient" in text or "doctor" in text or "diagnosis" in text:
@@ -276,26 +276,22 @@ def process(file_path):
 
     if doc_type == "CNIC":
         fields = extract_cnic(raw_text)
-        cleaned_text = clean_text(raw_text, preserve_numbers=True)
     elif doc_type == "EMR":
         fields = extract_emr(raw_text)
-        cleaned_text = clean_text(raw_text)
     elif doc_type == "ERP":
         fields = extract_erp(raw_text)
-        cleaned_text = clean_text(raw_text, preserve_numbers=True)
     elif doc_type == "PROPERTY":
         fields = extract_property(raw_text)
-        cleaned_text = clean_text(raw_text, preserve_numbers=True)
     else:
         fields = {"Error": "Unknown Document Type"}
-        cleaned_text = clean_text(raw_text)
 
-    # Format output neatly
-    output = f"🧠 Detected Type: {doc_type}\n\n"
-    for k, v in fields.items():
-        output += f"{k}: {v}\n"
+    # Create uniform JSON structure
+    json_output = {
+        "DOCtype": doc_type,
+        "rawtext": raw_text,
+    }
 
-    output += "\n\n===== RAW OCR TEXT =====\n" + raw_text
-    output += "\n\n===== CLEANED TEXT =====\n" + cleaned_text
+    # Merge extracted fields into the standard format
+    json_output.update(fields)
 
-    return output
+    return json_output
