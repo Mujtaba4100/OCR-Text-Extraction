@@ -1,0 +1,12 @@
+{
+    "DOCtype": "EMR",
+    "rawtext": "\n---- Page 1 ----\niH=VISIC NNDEVISERS\n\nKnowledge Extraction & Retrieval\n\nStep Task Tools / Models\n\n1. Data Ingestion | Text Documents e PyMuPDF\n\ne PDFPlumber\n\ne Apache Tika\n\ne Azure Form Recognizer\n\n¢ Google Document AI\n\ne GPT-4.1 / GPT-4o]\n\ne Google Gemini 2.0 Flash / Pro\n\nImage-Based Documents e Tesseract\ne LayoutLM\ne TrOCR\ne EasyOCR\ne PaddleOCR\ne Donut\n\n¢ Google Vision OCR\ne Microsoft Azure OCR\ne Claude 3.5 Sonnet\n\nInternal System Text Working on it\n2. Preprocessing |e Cleaning & Normalization e spaCy\ne NLTK\ne Named Entity Recognition (NER) |e« spaCy custom NER e RoBERTa-NER\n3. Domain e Key Phrase & Topic Extraction e HuggingFace e BioBERT (medical NER)\nUnderstanding e Relation Extraction transformers e FinBERT (finance NER)\ne Knowledge Graph Construction e Prodigy (annotation e med7 (medical entities)\ntool) e BERT-base multilingual\nNER\n\n\n---- Page 2 ----\n=VISIC\n\nNDEVISERS\n\n4, Embedding\n\nGenerate Text Embeddings\n\ne OpenAl text-embedding-\n\nGeneration 3-large / 3-small\ne Llama 3 Instruct Models\ne ed-large-v2\ne all-mpnet-base-v2\n5. Vector Store Text Embeddings Pinecone\nDatabase Qdrant\nMilvus\nRedis Vector Store\nWeaviate\nChromaDB\n6. Retrieval Semantic Search LangChain retrievers _| ReRankers:\nSystem Hybrid Search (Keyword + LlamaIndex\nSemantic) Qdrant/ Pinecone e Cohere ReRank\nContextual Retrieval (RAG) query APIs e bge-reranker-large\nElasticsearch Hybrid e cross-encoder/ms-marco-\nSearch MiniLM\n7. Content Document Summarization e GPT-4/5\nGeneration (LLM Q&A From Knowledge Base e GPT-40\nLayer) Drafting New Content e Llama3 70B\n\nMulti-step Reasoning\n\ne Claude 3.5 Sonnet\n\n8. Continuous\nLearning &\nFeedback Loop\n\nReinforcement learning from\nhuman feedback\n\nData augmentations\n\nActive learning\n\nFlow improvements\n\ne Periodic fine-tuning of\nBERT/LLM models\n\ne Lightweight adapters\n(LoRA/QLoRA)\n\n",
+    "Patient Name": null,
+    "Age": "1",
+    "Gender": null,
+    "Doctor": null,
+    "Diagnosis": null,
+    "Tests": null,
+    "Medicines": "Page 1, Google Gemini 2, Claude 3, Page 2, Generation 3, Llama 3, Claude 3",
+    "Date": null
+}
