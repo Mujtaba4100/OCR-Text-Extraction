@@ -1,61 +1,90 @@
 {
-    "DOCtype": "ERP",
-    "rawtext": "East Repair In INVOICE\n\n1912 Harvest Lane\nNew York, NY 12210\n\nBill To Ship To\nJohn Smith John Smith\n2 Court Square 3787 Pineview Drive\nNew York, NY 12210 Cambridge, MA 12210\nary DESCRIPTION\n1 Front and rear brake cables\n2 | New set of pedal arms\n\n3 Labor hrs\n\nTerms & Conditions\nPayment is due within 15 days\n\nPlease make checks payable to: East Repair Inc.\n\nInvoice # Us-001\nInvoice Date 11/02/2019\nPOH 2312/2019\nDue Date 26/02/2019\nUNIT PRICE AMOUNT\n100.00 100.00\n15.00 30.00\n5.00 15.00\nSubtotal 145.00\nSales Tax 6.25% 9.06\nTOTAL $154.06\n\nSwit\n",
-    "entities": {
+    "doc_type": "ERP",
+    "fields": {
+        "names": [
+            "Item"
+        ],
+        "invoice_numbers": [],
+        "amounts": [
+            "49,650.00",
+            "49,650.80",
+            "0427992029503",
+            "0000270479",
+            "2023",
+            "02",
+            "20",
+            "11",
+            "49",
+            "650.00",
+            "4",
+            "30",
+            "570",
+            "686",
+            "00",
+            "650.80"
+        ],
+        "dates": [
+            "February 11, 2023"
+        ],
+        "employee_ids": [],
+        "totals": [
+            "49,650.80"
+        ]
+    },
+    "entities_raw": {
         "ORG": [
-            "East Repair",
-            "John Smith John Smith",
-            "East Repair Inc",
-            "Sales Tax",
-            "UNIT",
-            "Invoice Date 11/02/2019\nPOH",
-            "East Repair Inc."
+            "ASKARI BANK",
+            "Quaid - i - Azam University",
+            "Branch",
+            "GHULA",
+            "Credit ACR No",
+            "ASKARI BANK LIMITED",
+            "Credit A/C No",
+            "Quaid",
+            "Challan Date",
+            "PKR",
+            "Student Service Charges",
+            "CASHIER"
         ],
         "LOC": [
-            "NY",
-            "MA",
-            "Cambridge",
-            "Court Square",
-            "Pineview Drive New York",
-            "Harvest Lane New York"
+            "Campus",
+            "Islamabad Challan",
+            "Challan",
+            "Cha",
+            "Sin"
+        ],
+        "PER": [
+            "Ai"
         ],
         "DATE": [
-            "1912",
-            "12210",
-            "3787",
-            "MA 12210",
-            "15 days",
-            "2312/2019"
-        ],
-        "FAC": [
-            "Harvest Lane\nNew York"
-        ],
-        "QUANTITY": [
-            "12210\n\nBill"
-        ],
-        "PERSON": [
-            "John Smith",
-            "DESCRIPTION"
+            "0427992029503",
+            "2023-02-20",
+            "February 11, 2023",
+            "686-00"
         ],
         "GPE": [
-            "New York",
-            "Cambridge"
+            "Islamabad",
+            "SF",
+            "Sina"
         ],
         "CARDINAL": [
-            "15.00 30.00",
-            "9.06",
-            "2",
-            "1",
-            "100.00 100.00",
-            "145.00",
-            "3",
-            "5.00 15.00"
+            "49,650.00",
+            "nine",
+            "30",
+            "570",
+            "49,650.80"
         ],
-        "PERCENT": [
-            "6.25%"
+        "PERSON": [
+            "Item"
         ],
-        "MONEY": [
-            "154.06"
+        "NORP": [
+            "sWAsancanean"
         ]
+    },
+    "text": "STUDENT COPY\n\nL Mn iversity\n\nLa is\nCredit ACR No. 0427992029503\n\nASKARI BANK LIMITED\nCredit A/C No. through\n\nQuaid-i-Azam University Campus Branch ,\nIslamabad\n\nChallan Nbr: QA: INVOICE-0000270479\n\nDue Date: “2023-02-20\nChallan Date: February 11, 2023 oes Due: 49,650.00\n\nChajfan For: es GHULA Student IDr-04072213019_\n\np/ogtiee e COM Pa SP23 (M)\n\n- Aimoun ik\n\nre a Details; SF\n| (PKR)\n\nS No <\n\noe Item i |\nRe 4 | Tuition oe in Sina a nine Naa” Sipaae'nda Unanaivn cman sWAsancanean! , 30, 570° oo : = a < 4\nor | Student Service Charges | << 49 686-00 i\n\n| Total: 49,650.80\n\nMANAGER“. - /\\_ CASHIER\n\na peeeisatirneenanissine\n",
+    "meta": {
+        "num_entities": 32,
+        "has_text": true,
+        "cnic_detected": false
     }
 }
