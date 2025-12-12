@@ -1,78 +1,48 @@
 {
-    "doc_type": "ERP",
-    "fields": {
-        "names": [
-            "Item"
-        ],
-        "invoice_numbers": [],
-        "amounts": [
-            "49,650.00",
-            "49,650.80",
-            "0427992029503",
-            "0000270479",
-            "2023",
-            "02",
-            "20",
-            "11",
-            "49",
-            "650.00",
-            "4",
-            "30",
-            "570",
-            "686",
-            "00",
-            "650.80"
-        ],
-        "dates": [
-            "February 11, 2023"
-        ],
-        "employee_ids": [],
-        "totals": [
-            "49,650.80"
-        ]
-    },
-    "entities_raw": {
+    "DOCtype": "ERP",
+    "rawtext": "STUDENT COPY\n\nL Mn iversity\n\nLa is\nCredit ACR No. 0427992029503\n\nASKARI BANK LIMITED\nCredit A/C No. through\n\nQuaid-i-Azam University Campus Branch ,\nIslamabad\n\nChallan Nbr: QA: INVOICE-0000270479\n\nDue Date: “2023-02-20\nChallan Date: February 11, 2023 oes Due: 49,650.00\n\nChajfan For: es GHULA Student IDr-04072213019_\n\np/ogtiee e COM Pa SP23 (M)\n\n- Aimoun ik\n\nre a Details; SF\n| (PKR)\n\nS No <\n\noe Item i |\nRe 4 | Tuition oe in Sina a nine Naa” Sipaae'nda Unanaivn cman sWAsancanean! , 30, 570° oo : = a < 4\nor | Student Service Charges | << 49 686-00 i\n\n| Total: 49,650.80\n\nMANAGER“. - /\\_ CASHIER\n\na peeeisatirneenanissine\n",
+    "entities": {
         "ORG": [
             "ASKARI BANK",
-            "Quaid - i - Azam University",
-            "Branch",
             "GHULA",
-            "Credit ACR No",
-            "ASKARI BANK LIMITED",
             "Credit A/C No",
-            "Quaid",
+            "CASHIER",
             "Challan Date",
+            "Quaid - i - Azam University",
             "PKR",
+            "ASKARI BANK LIMITED\n",
+            "Credit ACR No",
+            "Branch",
             "Student Service Charges",
-            "CASHIER"
+            "Quaid"
         ],
         "LOC": [
-            "Campus",
+            "Cha",
             "Islamabad Challan",
             "Challan",
-            "Cha",
+            "Campus",
             "Sin"
         ],
         "PER": [
             "Ai"
         ],
         "DATE": [
+            "February 11, 2023",
             "0427992029503",
             "2023-02-20",
-            "February 11, 2023",
             "686-00"
         ],
         "GPE": [
             "Islamabad",
-            "SF",
-            "Sina"
+            "Sina",
+            "SF"
         ],
         "CARDINAL": [
-            "49,650.00",
-            "nine",
             "30",
+            "nine",
             "570",
-            "49,650.80"
+            "49,650.80",
+            "49,650.00"
         ],
         "PERSON": [
             "Item"
@@ -80,11 +50,5 @@
         "NORP": [
             "sWAsancanean"
         ]
-    },
-    "text": "STUDENT COPY\n\nL Mn iversity\n\nLa is\nCredit ACR No. 0427992029503\n\nASKARI BANK LIMITED\nCredit A/C No. through\n\nQuaid-i-Azam University Campus Branch ,\nIslamabad\n\nChallan Nbr: QA: INVOICE-0000270479\n\nDue Date: “2023-02-20\nChallan Date: February 11, 2023 oes Due: 49,650.00\n\nChajfan For: es GHULA Student IDr-04072213019_\n\np/ogtiee e COM Pa SP23 (M)\n\n- Aimoun ik\n\nre a Details; SF\n| (PKR)\n\nS No <\n\noe Item i |\nRe 4 | Tuition oe in Sina a nine Naa” Sipaae'nda Unanaivn cman sWAsancanean! , 30, 570° oo : = a < 4\nor | Student Service Charges | << 49 686-00 i\n\n| Total: 49,650.80\n\nMANAGER“. - /\\_ CASHIER\n\na peeeisatirneenanissine\n",
-    "meta": {
-        "num_entities": 32,
-        "has_text": true,
-        "cnic_detected": false
     }
 }
