@@ -1,100 +1,119 @@
 import os
-import torch
 import pytesseract
 from pdf2image import convert_from_path
 import cv2
 from PIL import Image
-from typing import Dict
-from collections import defaultdict
-import spacy
-from transformers import pipeline
+import google.generativeai as genai
+import json
+import re
 
+
+genai.configure(api_key="AIzaSyBOLv7E_C7ZpOVMmTJoYVrY0wqAbXl0Gvk")
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 poppler_path = r"C:\Library\Release-25.12.0-0\poppler-25.12.0\Library\bin"
 
-
-spacy_nlp = spacy.load("en_core_web_sm")
-
-
-ner_models = {
-    "EMR": pipeline("ner", model="dslim/bert-base-NER", grouped_entities=True),
-    "ERP": pipeline("ner", model="dbmdz/bert-large-cased-finetuned-conll03-english", grouped_entities=True),
-    "PROPERTY": pipeline("ner", model="dbmdz/bert-large-cased-finetuned-conll03-english", grouped_entities=True),
-    "CNIC": pipeline("ner", model="dslim/bert-base-NER", grouped_entities=True),  # generic PERSON/DATE
-}
-
-
 def extract_text(file_path: str) -> str:
-    """Extract text from PDF/image using OCR"""
+    """Extract text from PDF/image using OCR."""
     text = ""
     if file_path.lower().endswith(".pdf"):
         pages = convert_from_path(file_path, poppler_path=poppler_path)
-        for i, page in enumerate(pages):
-            page_text = pytesseract.image_to_string(page)
-            text += f"\n---- Page {i+1} ----\n{page_text}"
-    elif file_path.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tiff")):
-        img = cv2.imread(file_path)
-        gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        text = pytesseract.image_to_string(gray_img)
+        for page in pages:
+            text += pytesseract.image_to_string(page) + "\n"
     else:
-        raise ValueError("Unsupported file type")
+        img = cv2.imread(file_path)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        text += pytesseract.image_to_string(gray)
     return text
 
 
 def detect_document_type(text: str) -> str:
-    """Detect document type using keywords"""
-    text_lower = text.lower()
-    if "identity card" in text_lower or "cnic" in text_lower or "nic" in text_lower:
+    t = text.lower()
+    if "identity card" in t or "cnic" in t or "nic" in t:
         return "CNIC"
-    elif "patient" in text_lower or "diagnosis" in text_lower or "medical" in text_lower:
+    elif "patient" in t or "diagnosis" in t or "medical" in t:
         return "EMR"
-    elif "invoice" in text_lower or "salary" in text_lower or "employee" in text_lower:
+    elif "invoice" in t or "salary" in t or "employee" in t:
         return "ERP"
-    elif "plot" in text_lower or "khasra" in text_lower or "registry" in text_lower:
+    elif "plot" in t or "khasra" in t or "registry" in t:
         return "PROPERTY"
     else:
         return "UNKNOWN"
 
+def generate_prompt(text: str, doc_type: str) -> str:
+    """Build a strict JSON extraction prompt for Gemini."""
+    if doc_type == "CNIC":
+        fields = [
+            "name", "father_name", "gender",
+            "country_of_stay", "identity_number",
+            "date_of_birth", "date_of_issue", "date_of_expiry"
+        ]
+    elif doc_type == "EMR":
+        fields = ["patient_name", "age", "gender", "diagnosis", "prescription", "doctor_name", "date"]
+    elif doc_type == "ERP":
+        fields = ["invoice_number", "date", "supplier_name", "buyer_name", "amount", "items"]
+    elif doc_type == "PROPERTY":
+        fields = ["owner_name", "plot_number", "registry_number", "area", "location", "date_of_issue"]
+    else:
+        fields = []
 
-def extract_entities(text: str, doc_type: str) -> Dict[str, list]:
+    fields_list = ", ".join(f'"{f}"' for f in fields)
+    return f"""
+Extract ONLY the following fields in JSON format (null if missing):
+{fields_list}
+
+Text:
+\"\"\"
+{text}
+\"\"\"
+"""
+
+def safe_json_loads(text: str) -> dict:
     """
-    Automatic NER extraction using domain-specific HF Transformers + spaCy backup
-    Returns dict of entities grouped by type
+    Try to parse JSON safely. If Gemini output is messy, extract {...}.
     """
-    entities = defaultdict(list)
-
-    if doc_type in ner_models:
-        ner = ner_models[doc_type]
-        hf_entities = ner(text)
-        for ent in hf_entities:
-            label = ent['entity_group']
-            entities[label].append(ent['word'])
-
-    
-    doc = spacy_nlp(text)
-    for ent in doc.ents:
-        entities[ent.label_].append(ent.text)
-
-   
-    entities = {k: list(set(v)) for k, v in entities.items()}
-    return entities
+    text = text.strip()
+    if not text:
+        return {"error": "Empty response from Gemini"}
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group())
+            except json.JSONDecodeError:
+                return {"error": "Could not parse JSON from Gemini output"}
+        return {"error": "No valid JSON found"}
 
 
-def process(file_path: str) -> Dict:
+def extract_fields_with_gemini(text: str, doc_type: str) -> dict:
+    """Use Gemini to extract structured fields."""
+    if doc_type == "UNKNOWN":
+        return {"DOCtype": "UNKNOWN", "rawtext": text}
+
+    prompt = generate_prompt(text, doc_type)
+
+    try:
+        model = genai.GenerativeModel("gemini-2.5-flash")
+        response = model.generate_content(prompt)
+        raw_output = response.text
+        fields = safe_json_loads(raw_output)
+    except Exception as e:
+        fields = {"error": str(e)}
+
+    fields["DOCtype"] = doc_type
+    fields["rawtext"] = text
+    return fields
+
+def process(file_path: str) -> dict:
     """
-    Full pipeline:
+    Complete pipeline:
     1. OCR extraction
     2. Document type detection
-    3. Domain-aware NER
+    3. Gemini-based field extraction
     """
     raw_text = extract_text(file_path)
     doc_type = detect_document_type(raw_text)
-    entities = extract_entities(raw_text, doc_type)
-
-    output = {
-        "DOCtype": doc_type,
-        "rawtext": raw_text,
-        "entities": entities
-    }
-    return output
+    return extract_fields_with_gemini(raw_text, doc_type)
