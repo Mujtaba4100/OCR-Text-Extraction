@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import pytesseract
 from pdf2image import convert_from_path
 import cv2
@@ -7,8 +8,9 @@ import google.generativeai as genai
 import json
 import re
 
+load_dotenv()
 
-genai.configure(api_key="AIzaSyBOLv7E_C7ZpOVMmTJoYVrY0wqAbXl0Gvk")
+genai.configure(api_key=os.getenv("api_key"))
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 poppler_path = r"C:\Library\Release-25.12.0-0\poppler-25.12.0\Library\bin"
