@@ -140,7 +140,7 @@ def add_document_to_index(doc_json: Dict[str, Any]) -> str:
     # Add to FAISS index
     index.add(embedding.reshape(1, -1))
     
-    # Store metadata (exclude large fields)
+   
     metadata_entry = {
         "doc_id": doc_id,
         "DOCtype": doc_type,
@@ -181,7 +181,7 @@ def semantic_search(query: str, top_k: int = 5) -> List[Dict[str, Any]]:
     if index.ntotal == 0:
         return []
     
-    # Generate query embedding and search
+    
     query_embedding = _generate_embedding(query)
     actual_top_k = min(top_k, index.ntotal)
     scores, indices = index.search(query_embedding.reshape(1, -1), actual_top_k)
