@@ -4,3 +4,5 @@ __pycache__/
 data/
 uploads/
 .env
+metadata.json
+faiss.index

@@ -1,10 +1,22 @@
 import os
 import json
+import logging
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from ai_pipeline import process
 
+# Import embedding pipeline (graceful fallback if unavailable)
+try:
+    from embedding_pipeline import add_document_to_index
+    EMBEDDING_ENABLED = True
+except ImportError:
+    EMBEDDING_ENABLED = False
+    logging.warning("[App] Embedding pipeline not available. Semantic search disabled.")
+
 app = Flask(__name__, template_folder="templates")
+
+# Configure logging for embedding errors
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 UPLOAD_FOLDER = "uploads"
 DATA_FOLDER = "data"
@@ -33,7 +45,15 @@ def index():
             except Exception as e:
                 extracted_data = {"error": str(e)}
 
-            
+            # Index document for semantic search (non-blocking, error-safe)
+            if EMBEDDING_ENABLED and "error" not in extracted_data:
+                try:
+                    add_document_to_index(extracted_data)
+                    logging.info(f"[Embedding] Document indexed: {filename}")
+                except Exception as e:
+                    logging.error(f"[Embedding] Failed to index {filename}: {e}")
+                    # Extraction continues even if embedding fails
+
             with open(json_path, "w", encoding="utf-8") as f:
                 json.dump(extracted_data, f, indent=4, ensure_ascii=False)
 
