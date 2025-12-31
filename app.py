@@ -7,7 +7,7 @@ from ai_pipeline import process
 
 # Import embedding pipeline (graceful fallback if unavailable)
 try:
-    from embedding_pipeline import add_document_to_index
+    from embedding_pipeline import add_document_to_index, semantic_search
     EMBEDDING_ENABLED = True
 except ImportError:
     EMBEDDING_ENABLED = False
@@ -26,20 +26,23 @@ os.makedirs(DATA_FOLDER, exist_ok=True)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    extracted_data = None
+    json_file = None
+    search_results = None
+    search_query = ""
+    
     if request.method == "POST":
-        uploaded_file = request.files.get("file")
-        if uploaded_file and uploaded_file.filename != "":
-           
+        # Handle document upload
+        if "file" in request.files and request.files["file"].filename != "":
+            uploaded_file = request.files["file"]
             filename = uploaded_file.filename
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             uploaded_file.save(file_path)
 
-            
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
             json_file = f"data_{timestamp}.json"
             json_path = os.path.join(DATA_FOLDER, json_file)
 
-            
             try:
                 extracted_data = process(file_path)
             except Exception as e:
@@ -52,15 +55,27 @@ def index():
                     logging.info(f"[Embedding] Document indexed: {filename}")
                 except Exception as e:
                     logging.error(f"[Embedding] Failed to index {filename}: {e}")
-                    # Extraction continues even if embedding fails
 
             with open(json_path, "w", encoding="utf-8") as f:
                 json.dump(extracted_data, f, indent=4, ensure_ascii=False)
+        
+        # Handle semantic search
+        elif "search_query" in request.form:
+            search_query = request.form.get("search_query", "").strip()
+            if search_query and EMBEDDING_ENABLED:
+                try:
+                    search_results = semantic_search(search_query, top_k=5)
+                    logging.info(f"[Search] Query: '{search_query}' returned {len(search_results)} results")
+                except Exception as e:
+                    logging.error(f"[Search] Failed: {e}")
+                    search_results = []
 
-            
-            return redirect(url_for("result", json_file=json_file))
-
-    return render_template("index.html", extracted_data=None)
+    return render_template("index.html", 
+                          extracted_data=extracted_data, 
+                          json_file=json_file,
+                          search_results=search_results,
+                          search_query=search_query,
+                          embedding_enabled=EMBEDDING_ENABLED)
 
 
 @app.route("/result", methods=["GET"])
@@ -74,7 +89,12 @@ def result():
             with open(json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-    return render_template("index.html", extracted_data=data)
+    return render_template("index.html", 
+                          extracted_data=data, 
+                          json_file=json_file,
+                          search_results=None,
+                          search_query="",
+                          embedding_enabled=EMBEDDING_ENABLED)
 
 @app.route("/download", methods=["GET"])
 def download_json():
