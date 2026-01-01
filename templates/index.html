@@ -15,6 +15,8 @@
     .doc-type-badge { font-size: 0.8rem; }
     .metadata-table { font-size: 0.85rem; }
     .metadata-table td { padding: 0.25rem 0.5rem; }
+    .llm-answer { background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%); border-left: 4px solid #4caf50; }
+    .llm-answer-text { font-size: 1.05rem; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -69,19 +71,19 @@
       <div class="col-lg-6">
         <!-- Search Card -->
         <div class="card p-4 mb-4">
-          <h5 class="mb-3"><i class="bi bi-search"></i> Semantic Search</h5>
+          <h5 class="mb-3"><i class="bi bi-search"></i> Ask a Question</h5>
           {% if embedding_enabled %}
           <form method="POST">
             <div class="input-group mb-2">
               <input type="text" class="form-control" name="search_query" 
-                     placeholder="e.g., Find CNIC for Ali Khan" 
+                     placeholder="e.g., What is the date of birth of Ali Khan?" 
                      value="{{ search_query }}" required>
               <button class="btn btn-success" type="submit">
-                <i class="bi bi-search"></i> Search
+                <i class="bi bi-chat-dots"></i> Ask
               </button>
             </div>
           </form>
-          <p class="text-muted small mb-0">Search documents using natural language queries</p>
+          <p class="text-muted small mb-0">Ask questions about your documents in natural language</p>
           {% else %}
           <div class="alert alert-warning mb-0">
             <i class="bi bi-exclamation-triangle"></i> Embedding pipeline not available.
@@ -89,13 +91,21 @@
           {% endif %}
         </div>
 
+        <!-- LLM Answer Card -->
+        {% if llm_answer %}
+        <div class="card p-4 mb-4 llm-answer">
+          <h5 class="mb-3"><i class="bi bi-robot"></i> AI Answer</h5>
+          <p class="llm-answer-text mb-0">{{ llm_answer }}</p>
+        </div>
+        {% endif %}
+
         <!-- Search Results Card -->
         <div class="card p-4">
-          <h5 class="mb-3"><i class="bi bi-list-ul"></i> Search Results</h5>
+          <h5 class="mb-3"><i class="bi bi-list-ul"></i> Source Documents</h5>
           
           {% if search_results is not none %}
             {% if search_results | length > 0 %}
-              <p class="text-muted small">Found {{ search_results | length }} result(s) for "<strong>{{ search_query }}</strong>"</p>
+              <p class="text-muted small">Top {{ search_results | length }} document(s) matching "<strong>{{ search_query }}</strong>"</p>
               
               {% for result in search_results %}
               <div class="search-result rounded p-3 mb-3">

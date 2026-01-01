@@ -8,6 +8,7 @@ A Python-based document processing system with OCR, AI extraction, and semantic 
 - **Document Detection** - Auto-detect CNIC, EMR, ERP, Property documents
 - **AI Field Extraction** - Gemini-powered structured data extraction
 - **Semantic Search** - FAISS + Sentence Transformers for natural language queries
+- **LLM Q&A** - Natural language answers based on document metadata
 
 ## Setup
 
@@ -65,3 +66,4 @@ results = semantic_search("Find CNIC for Ali Khan", top_k=5)
 | `process(file_path)` | Extract structured data from document |
 | `add_document_to_index(doc_json)` | Index document for search |
 | `semantic_search(query, top_k)` | Find similar documents |
+| `answer_query_with_llm(query, results)` | Generate natural language answer |
