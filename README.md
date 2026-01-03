@@ -67,3 +67,4 @@ results = semantic_search("Find CNIC for Ali Khan", top_k=5)
 | `add_document_to_index(doc_json)` | Index document for search |
 | `semantic_search(query, top_k)` | Find similar documents |
 | `answer_query_with_llm(query, results)` | Generate natural language answer |
+

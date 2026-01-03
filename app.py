@@ -3,12 +3,10 @@ import json
 import logging
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file
-from ai_pipeline import process
+from ai_pipeline import process, call_groq_chat
 from dotenv import load_dotenv
-import google.generativeai as genai
 
 load_dotenv()
-genai.configure(api_key=os.getenv("api_key"))
 
 # Import embedding pipeline (graceful fallback if unavailable)
 try:
@@ -71,9 +69,9 @@ User Question: {user_query}
 Provide a direct, concise answer:"""
     
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(prompt)
-        answer = response.text.strip()
+        # Use Groq OpenAI-compatible chat completions via helper
+        # Model selection will use `api_model` env var if set, otherwise fallback.
+        answer = call_groq_chat(prompt)
         return answer if answer else "Information not available."
     except Exception as e:
         logging.error(f"[LLM] Error generating answer: {e}")
