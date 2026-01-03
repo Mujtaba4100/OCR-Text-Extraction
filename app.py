@@ -70,31 +70,14 @@ User Question: {user_query}
 
 Provide a direct, concise answer:"""
     
-    # Try multiple models with correct model names
-    models_to_try = [
-        "gemini-1.5-pro",  # Stable model
-        "gemini-1.5-flash-latest",  # Latest flash
-        "gemini-2.0-flash-exp",  # Experimental
-        "gemini-exp-1206"  # Alternative
-    ]
-    
-    for model_name in models_to_try:
-        try:
-            logging.info(f"[LLM] Trying model: {model_name}")
-            model = genai.GenerativeModel(model_name)
-            response = model.generate_content(prompt)
-            answer = response.text.strip()
-            return answer if answer else "Information not available."
-        except Exception as e:
-            error_str = str(e).lower()
-            if "429" in error_str or "quota" in error_str:
-                logging.warning(f"[LLM] Quota exceeded for {model_name}, trying next model...")
-                continue
-            else:
-                logging.error(f"[LLM] Error with {model_name}: {e}")
-                continue
-    
-    return "Unable to generate answer. API quota exceeded. Please try again later."
+    try:
+        model = genai.GenerativeModel("gemini-2.0-flash")
+        response = model.generate_content(prompt)
+        answer = response.text.strip()
+        return answer if answer else "Information not available."
+    except Exception as e:
+        logging.error(f"[LLM] Error generating answer: {e}")
+        return "Unable to generate answer. Please try again."
 
 UPLOAD_FOLDER = "uploads"
 DATA_FOLDER = "data"
